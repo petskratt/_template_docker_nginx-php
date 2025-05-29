@@ -1,0 +1,14 @@
+.idea
+.DS_Store
+# configs
+.env
+app.env
+origin.crt
+origin.key
+# packages & modules
+**/node_modules
+**/vendor
+# various temp locations
+/cache
+/results
+/db

@@ -1,0 +1,51 @@
+name: ${BASENAME}
+
+services:
+  ingress:
+    image: nginxinc/nginx-unprivileged:stable-alpine
+    restart: always
+    container_name: ${BASENAME}-ingress
+    hostname: ${BASENAME}-ingress
+    ports:
+      - 443:8443
+      - 80:8080
+    env_file: ./app.env
+    environment:
+      # using .env variables to define or override app.env
+      - BACKEND=${BASENAME}-app:9000
+    volumes:
+      - ./src:/var/www:ro
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/templates:/etc/nginx/templates:ro
+      - ./docker/nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - app
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - isolated
+      - public
+
+  app:
+    restart: always
+    container_name: ${BASENAME}-app
+    hostname: ${BASENAME}-app
+    env_file: ./app.env
+    build:
+      context: ./docker/php
+    volumes:
+      - ./src:/var/www
+    environment:
+      - PHP_ERROR_REPORTING=E_ALL
+    user: "www-data:www-data"
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - isolated
+
+networks:
+  isolated:
+    driver: bridge
+    internal: true
+  public:
+    driver: bridge
