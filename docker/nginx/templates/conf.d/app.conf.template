@@ -1,16 +1,18 @@
 server {
-    listen 8080 default_server;
+    listen 8080;
+    server_name ${SERVERNAME};
     set $always_redirect ${NGINX_ALWAYS_TLS_REDIRECT};
 
     if ($always_redirect = on) {
         return 301 https://$host$request_uri;
     }
 
-    include /etc/nginx/conf.d/server-common.inc;
+    include includes/server-common.conf;
 }
 
 server {
-    listen 8443 default_server ssl;
+    listen 8443 ssl;
+    server_name ${SERVERNAME};
 
     ssl_certificate         ${SSL_CERT};
     ssl_certificate_key     ${SSL_CERT_KEY};
@@ -22,5 +24,5 @@ server {
     ssl_session_timeout 1d;
     ssl_session_cache shared:MozSSL:10m;
 
-    include /etc/nginx/conf.d/server-common.inc;
+    include /etc/nginx/includes/server-common.conf;
 }

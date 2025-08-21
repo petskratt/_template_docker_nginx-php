@@ -1,0 +1,16 @@
+# Dummy default server to ensure we only serve configured hostnames
+# pets@tehnokratt.net / 2025-08-21
+
+server {
+  listen 8080 default_server;
+  server_name _;
+  return 444;
+  access_log off;
+  log_not_found off;
+}
+
+server {
+  listen 8443 default_server;
+  server_name _;
+  ssl_reject_handshake on;
+}
